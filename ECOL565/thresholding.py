@@ -38,11 +38,10 @@ print match_number, 'MATCHES'
 
 output_file = inpt_file.strip('.csv') + '_threshold_' + str(threshold) + '.csv'
 
-"""
+
 with open(output_file, 'w') as otpt:
     otpt.write('Species,Genes with Coverage\n')
     for species in spps:
         if species in matches:
             entry = '%s,%s\n' % (species, matches[species])
             otpt.write(entry)
-"""

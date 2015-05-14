@@ -1,7 +1,20 @@
 __author__ = 'asherkhb'
+# phylogeny_heatmap_generator
+# From a multiple sequence alignment, phylogeny (NEXUS format), and list of genes, generate a heatmap of coverage.
+# NEXUS phylogeny MUST have an intact taxa block
+# This will produce a CSV, which can be made into a heatmap with Excel.
+#
+# User must assign "User Assigned Variables"
+# User must generate coverage matrices using gene_coverage_matrix.py
+#
+# NOTE: This is a rough, quick and dirty script I made to accomplish a specific task. A much, much better of this
+# script is coming soon to my phylogenetic_tools repository, and a web version will be implemented shortly after.
+# Thus, only use this if you absolutely have to, and don't judge me for the sloppiness.
+
 
 import cPickle as pickle
 
+#User Assigned Variables
 genes = ['18s', '26s', 'atpB', 'ITS', 'matK', 'rbcL', 'trnLtrnF']
 msa = '80species.phy'
 phylogeny = 'threshold5_threshold2_subtree.nexus'

@@ -1,11 +1,13 @@
 __author__ = 'asherkhb'
-
-#Output appending = <filename.phy>_coverage.csv
+# gene_coverage_matrix.py
+# Generates coverage matrices for a set of genes based on separate MSA for each gene.
+#
+# By no means polished, so use at your own risk.
 
 genes = ['18s', '26s', 'atpB', 'ITS', 'matK', 'rbcL', 'trnLtrnF']
 
 for gene in genes:
-    genefile = '80species_' + gene + '.phy'
+    genefile = gene + '.phy'
     outfile = genefile + '_coverage.csv'
 
     with open(genefile, 'r') as inpt, open(outfile, 'w') as otpt:

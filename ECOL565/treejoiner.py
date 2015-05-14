@@ -1,5 +1,10 @@
 __author__ = 'asherkhb'
+# treejoiner.py
+# Combines multiple, single-tree newick files into a single, multi-tree newick file.
+#
+# User must modify "User Assigned Variables" to represent their specific files and locations.
 
+# User Assigned Variables
 outputfile = "./duptree/bootstraps.newick"
 tree_number = 100
 base_name = "./duptree/species_bootstrap"

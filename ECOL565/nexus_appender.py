@@ -1,4 +1,8 @@
 __author__ = 'asherkhb'
+# nexus_appender.py
+# Appends an user specified "appending" to an input nexus file.
+#
+# Usage: python nexus_appender.py <nexus_file> <appending>
 
 from sys import argv
 import cPickle as pickle

@@ -1,4 +1,10 @@
 __author__ = 'asherkhb'
+# tree_calculations.py
+# Calculates tree metrics for two trees fed as arguments
+#
+# Usage: python tree_calcuations.py <tree1> <tree2>
+#
+# Dependencies: DendroPy
 
 from sys import argv
 import dendropy
