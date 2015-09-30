@@ -1,27 +1,11 @@
-import argparse
+from astropy.io import fits as pyfits
 from os import listdir
-import pyfits
 from sys import argv
-# on HPC: from astropy.io import fits as pyfits
-
 
 __author__ = 'asherkhb'
 
-# Future options:
-# Input: (default = path ./)
-# -p <path to images>
-# -u <url to images>
-
-# Checkpointing
-# -s <filename> --> save checkpointing to filename
-# -r <filename> --> resume from checkpointing file
-#parser = argparse.ArgumentParser()
-#parser.add_argument('p')
-
-#img_directory = './bPic_zp_sat_001'  # Will be "-p"
-
 img_directory = argv[1]
-output_file = 'otpt2.csv'  # Will be from "-o"
+output_file = 'otpt.csv'  # Will be from "-o"
 
 # From path to image directory, find all *.fits files and save in file_queue, and save all other files in alt_files
 file_queue = []
