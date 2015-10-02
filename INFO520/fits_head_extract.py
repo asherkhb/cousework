@@ -1,29 +1,48 @@
+#!/usr/bin/env python
+
 import argparse
 from os import listdir
-import pyfits
-from sys import argv
-# on HPC: from astropy.io import fits as pyfits
-
 
 __author__ = 'asherkhb'
 
 # Future options:
-# Input: (default = path ./)
-# -p <path to images>
-# -u <url to images>
+#    Inputs
+#      -u <url to images>
+#    Checkpointing
+#      -s <filename> --> save checkpointing to filename
+#      -r <filename> --> resume from checkpointing file
 
-# Checkpointing
-# -s <filename> --> save checkpointing to filename
-# -r <filename> --> resume from checkpointing file
-#parser = argparse.ArgumentParser()
-#parser.add_argument('p')
+# Parse arguments
+parser = argparse.ArgumentParser(description="FITS Image Processing",
+                                 epilog="For more help, visit XXX")
+parser.add_argument('-p',
+                    type=str,
+                    default="./",
+                    help="path to images")
 
-#img_directory = './bPic_zp_sat_001'  # Will be "-p"
+parser.add_argument('-o',
+                    type=str,
+                    default="output.csv",
+                    help="output metadata CSV filename")
 
-img_directory = argv[1]
-output_file = 'otpt2.csv'  # Will be from "-o"
+parser.add_argument("-H",
+                    action="store_true",
+                    help="use HPC mode")
 
-# From path to image directory, find all *.fits files and save in file_queue, and save all other files in alt_files
+args = parser.parse_args()
+#print args
+
+# Import appropriate FITS library.
+if args.H:
+    from astropy.io import fits as pyfits
+else:
+    import pyfits
+
+# Assign input/output.
+img_directory = args.p
+output_file = args.o  # Will be from "-o"
+
+# From path to image directory, find all *.fits files and save in file_queue, and save all other files in alt_files.
 file_queue = []
 alt_files = []
 for f in listdir(img_directory):
@@ -40,7 +59,7 @@ shut_count = 0
 error_count = 0
 
 
-# Analyze each file
+# Analyze each file.
 csv_entries = []
 for fits_file in file_queue:
     file_location = img_directory + '/' + fits_file
@@ -58,7 +77,7 @@ for fits_file in file_queue:
     # Get Observation Date
     # DATE-OBS= '2014-11-04T05:35:16.481449' / Date of obs. YYYY-mm-ddTHH:MM:SS
     obsdate = head['DATE-OBS']
-    obsdate = obsdate.replace('-', '').replace('T', '').replace(':', '').replace('.', '')
+    #obsdate = obsdate.replace('-', '').replace('T', '').replace(':', '').replace('.', '')
     #print obsdate
 
     # Get Image Type
@@ -100,7 +119,6 @@ for fits_file in file_queue:
             shut_count += 1
         error_count += 1
         print "ERROR3: Unknown vimtype [%s] - %s" % (vimtype, fits_file)
-
 
     # Compile Entry and append to entries list
     file_entry = "%s,%s,%s,%s\n" % (fits_file.rstrip(".fits"), obsdate, vimtype, vshutter)
