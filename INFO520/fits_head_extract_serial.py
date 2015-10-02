@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import argparse
+from datetime import datetime
 from os import listdir, path
 
 __author__ = 'asherkhb'
+start = datetime.now()
+
 
 def extract_metadata(fits_file):
     f = pyfits.open(fits_file)
@@ -116,6 +119,11 @@ with open(output_file, 'w') as otpt:
     for entry in csv_entries:
         otpt.write(entry)
 
+# Calculate runtime.
+end = datetime.now()
+duration = end - start
+
 # Write summary to stdout.
 print "FITS-HEAD-EXTRACT is completed!"
+print "Total Execution Time (seconds): %d.%d" % (duration.seconds, duration.microseconds)
 print_summary(len(file_queue), science_count, dark_count, open_count, shut_count, error_count)
