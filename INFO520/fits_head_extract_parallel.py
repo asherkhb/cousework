@@ -6,7 +6,6 @@ from os import listdir, path
 import multiprocessing as mp
 
 __author__ = 'asherkhb'
-
 start = datetime.now()
 
 
@@ -122,6 +121,7 @@ with open(output_file, 'w') as otpt:
     for entry in csv_entries:
         otpt.write(entry)
 
+# Calculate runtime.
 end = datetime.now()
 duration = end - start
 
