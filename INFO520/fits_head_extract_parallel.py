@@ -129,7 +129,7 @@ for meta in meta_list:
     else:
         error = 1
         error_count += 1
-        print "ERROR: Unrecognized Image Type (%s)" % meta["vimtype"]
+        print "ERROR [%s]: Unrecognized Image Type (%s)" % (meta["filename"], meta["vimtype"])
 
     if meta["vshutter"] == 'OPEN':
         open_count += 1
@@ -138,21 +138,27 @@ for meta in meta_list:
     else:
         error = 1
         error_count += 1
-        print "ERROR: Unrecognized Shutter State (%s)" % meta["shutter"]
+        print "ERROR [%s]: Unrecognized Shutter State (%s)" % (meta["filename"], meta["shutter"])
 
     if meta["vimtype"] == 'SCIENCE' and meta["vshutter"] == 'SHUT':
         error = 1
         error_count += 1
-        print "ERROR: Image Type/Shutter State Conflict (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+        print "ERROR [%s]: Image Type/Shutter State Conflict (%s, %s)" % (meta["filename"],
+                                                                          meta['vimtype'],
+                                                                          meta['vshutter'])
     elif meta["vimtype"] == 'DARK' and meta["vshutter"] == 'OPEN':
         error = 1
         error_count += 1
-        print "ERROR: Image Type/Shutter State Conflict (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+        print "ERROR [%s]: Image Type/Shutter State Conflict (%s, %s)" % (meta["filename"],
+                                                                          meta['vimtype'],
+                                                                          meta['vshutter'])
 
     if meta["vimtype"] == 'SCIENCE' and meta["aoloopst"] == 'OPEN':
         error = 1
         error_count += 1
-        print "ERROR: AOLOOPST Open for Science Image (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+        print "ERROR [%s]: AOLOOPST Open for Science Image (%s, %s)" % (meta["filename"],
+                                                                        meta['vimtype'],
+                                                                        meta['vshutter'])
 
     # Compile Entry and append to entries list
     entry = "%s,%s,%s,%s,%s\n" % (meta["filename"],
