@@ -17,15 +17,16 @@ def extract_metadata(fits_file):
     obsdate = head['DATE-OBS']
     vimtype = head['VIMTYPE']
     vshutter = head['VSHUTTER']
+    aoloopst = head['AOLOOPST']
 
     metadata = {"filename": filename,
                 "obsdate": obsdate,
                 "vimtype": vimtype,
-                "vshutter": vshutter}
+                "vshutter": vshutter,
+                "aoloopst": aoloopst}
 
     f.close()
-    return metadata  # for Parallel methods #1, #2
-
+    return metadata
 
 
 def print_summary(img_total, science_count, dark_count, open_count, shut_count, error_count):
@@ -36,6 +37,29 @@ def print_summary(img_total, science_count, dark_count, open_count, shut_count, 
       "> OPEN Shutter: %s\n" \
       "> CLOSED Shutter: %d\n" \
       "> ERRORS: %d" % (img_total, science_count, dark_count, open_count, shut_count, error_count)
+
+
+def write_makeflow(makeflow_list):
+    """
+    makeflow_dict to be structured as [{"input": "<science_img>", "reference": "<dark_img"}, ...]
+    :param makeflow_dict: Dictionary of makeflow objects
+    :return:
+    """
+    program = "fitssub"
+    output_prefix = 'sub_'
+    with open("makeflow.mf", 'w') as makeflow:
+        for i, makeflow_object in enumerate(makeflow_list):
+            otpt = output_prefix + makeflow_object["input"]
+            entry1 = "%s: %s %s %s\n" % (otpt,
+                                         program,
+                                         makeflow_object["input"],
+                                         makeflow_object["reference"])
+            entry2 = "\t%s -i %s -r %s -o %s\n\n" % (program,
+                                                     makeflow_object["input"],
+                                                     makeflow_object["reference"],
+                                                     otpt)
+            entry = entry1 + entry2
+            makeflow.write(entry)
 
 
 # Future options:
@@ -59,6 +83,9 @@ parser.add_argument('-o',
 parser.add_argument("-H",
                     action="store_true",
                     help="use HPC mode")
+parser.add_argument("-V",
+                    action="store_true",
+                    help="validate entries before producing output")
 args = parser.parse_args()
 
 # Import appropriate FITS library.
@@ -93,12 +120,14 @@ meta_list = meta_pool.map(extract_metadata, file_queue)
 
 csv_entries = []
 for meta in meta_list:
+    error = 0
     # Populate summary variables.
     if meta["vimtype"] == 'SCIENCE':
         science_count += 1
     elif meta["vimtype"] == "DARK":
         dark_count += 1
     else:
+        error = 1
         error_count += 1
         print "ERROR: Unrecognized Image Type (%s)" % meta["vimtype"]
 
@@ -107,15 +136,40 @@ for meta in meta_list:
     elif meta["vshutter"] == 'SHUT':
         shut_count += 1
     else:
+        error = 1
         error_count += 1
         print "ERROR: Unrecognized Shutter State (%s)" % meta["shutter"]
 
+    if meta["vimtype"] == 'SCIENCE' and meta["vshutter"] == 'SHUT':
+        error = 1
+        error_count += 1
+        print "ERROR: Image Type/Shutter State Conflict (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+    elif meta["vimtype"] == 'DARK' and meta["vshutter"] == 'OPEN':
+        error = 1
+        error_count += 1
+        print "ERROR: Image Type/Shutter State Conflict (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+
+    if meta["vimtype"] == 'SCIENCE' and meta["aoloopst"] == 'OPEN':
+        error = 1
+        error_count += 1
+        print "ERROR: AOLOOPST Open for Science Image (%s, %s)" % (meta['vimtype'], meta['vshutter'])
+
     # Compile Entry and append to entries list
-    entry = "%s,%s,%s,%s\n" % (meta["filename"], meta["obsdate"], meta["vimtype"], meta["vshutter"])
-    csv_entries.append(entry)
+    entry = "%s,%s,%s,%s,%s\n" % (meta["filename"],
+                                  meta["obsdate"],
+                                  meta["vimtype"],
+                                  meta["vshutter"],
+                                  meta["aoloopst"])
+    if args.V:
+        if error:
+            pass
+        else:
+            csv_entries.append(entry)
+    else:
+        csv_entries.append(entry)
 
 # Generate output CSV.
-csv_header = "FILENAME,DATETIME,IMAGETYPE,SHUTTER\n"
+csv_header = "FILENAME,DATETIME,IMAGETYPE,SHUTTER,AOLOOPST\n"
 with open(output_file, 'w') as otpt:
     otpt.write(csv_header)
     for entry in csv_entries:
