@@ -1,7 +1,11 @@
 #!/usr/bin/env python
-__author__ = 'senorrift'
 
+from datetime import datetime
 from sys import argv
+
+__author__ = 'senorrift'
+start = datetime.now()
+
 
 def analyze_sorted(csv_file):
     with open(csv_file, 'r') as inpt:
@@ -33,4 +37,23 @@ def analyze_sorted(csv_file):
 
 
 composition = analyze_sorted(argv[1])
-print composition
+log = []
+for group in composition:
+    vimtype = group["type"]
+    count = group["count"]
+    content = group["contents"]
+    f = content[0]
+    l = content[len(content)]
+    if vimtype == 'DARK':
+        avg_name = f + "-" + l
+        log.append("%s: %d\n>DARK GROUP AVERAGED: %s\n" % (vimtype, count, avg_name))
+    elif vimtype == 'SCIENCE':
+        log.append("%s: %d\n" % (vimtype, count))
+    else:
+        log.append("%s: %d\n>WARNING: UNKNOWN TYPE GROUP (SKIPPED)\n" % (vimtype, count))
+
+end = datetime.now()
+duration = end - start
+print "FITS Averaging Complete"
+print "Total Execution Time (seconds): %d.%d" % (duration.seconds, duration.microseconds)
+print ''.join(log).rstrip('\n')
