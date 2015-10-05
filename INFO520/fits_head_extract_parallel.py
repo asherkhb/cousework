@@ -166,3 +166,6 @@ duration = end - start
 print "FITS-HEAD-EXTRACT is completed!"
 print "Total Execution Time (seconds): %d.%d" % (duration.seconds, duration.microseconds)
 print_summary(len(file_queue), science_count, dark_count, open_count, shut_count, error_count)
+if not args.V and error_count > 0:
+    print("WARNING: Output contains files with known errors. "
+          "To produce output with these error files omitted, use the -V flag")
