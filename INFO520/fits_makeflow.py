@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 from datetime import datetime
 import multiprocessing as mp
@@ -8,11 +10,14 @@ start = datetime.now()
 
 def spawn_makeflow_entry(program, input, reference):
     """
+    Spawn Makeflow Entry.
+    From a program, input, and reference, generates a makeflow entry for that input.
+    Currently designed to work with 'fitssub' (LINK).
 
-    :param program:
-    :param input:
-    :param reference:
-    :return:
+    :param program: program that will be run (i.e. 'fitssub')
+    :param input: input FITS file (usually with VIMTYPE='SCIENCE')
+    :param reference: reference FITS file (usually with VIMTYPE='DARK')
+    :return: makeflow entry (str)
     """
     otpt = input.replace('.fits', '_sub.fits')
     line_1 = "%s: %s %s %s\n" % (otpt, program, input, reference)
@@ -23,9 +28,12 @@ def spawn_makeflow_entry(program, input, reference):
 
 def parse_img_csv(csv_file):
     """
+    Parse FITS Header CSV
+    From a sorted CSV of select FITS header information (generatd with fits_head_extract_*.py, then sorted by date)
+    Generate a list of input/reference pairs.
 
-    :param csv_file:
-    :return:
+    :param csv_file: sorted, FITS header CSV (i.e. from fits_head_extract_parallel.py, then sorted by date)
+    :return: List of required tasks [{"input":<inputfile>, "reference":<referencefile>}, ...]
     """
     required_tasks = []
 
@@ -51,6 +59,13 @@ def parse_img_csv(csv_file):
 
 
 def write_makeflow(makeflow_task_list):
+    """
+    Write Makeflow
+    From a list of makeflow tasks (already formatted), write entries to an output makeflow file.
+
+    :param makeflow_task_list: List of makeflow entries (from spawn_makeflow_entry)
+    :return: None (writes to output file)
+    """
     with open(output_file, 'w') as makeflow:
         for task in makeflow_task_list:
             makeflow.write(task)
@@ -67,11 +82,15 @@ parser.add_argument('-o',
                     type=str,
                     default="makeflow.mf",
                     help="output Makeflow filename")
+# TODO: Add ability to specify a path for images.
+parser.add_argument('-p',
+                    type=str,
+                    #default="./",
+                    help="path to images")
 parser.add_argument("-P",
                     action="store_true",
                     help="use parallelized processing")
 args = parser.parse_args()
-
 
 # # ----- Assign input/output. ----- # #
 input_file = args.i
