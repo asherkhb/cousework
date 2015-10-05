@@ -8,24 +8,6 @@ __author__ = 'senorrift'
 start = datetime.now()
 
 
-def spawn_makeflow_entry(program, input, reference):
-    """
-    Spawn Makeflow Entry.
-    From a program, input, and reference, generates a makeflow entry for that input.
-    Currently designed to work with 'fitssub' (LINK).
-
-    :param program: program that will be run (i.e. 'fitssub')
-    :param input: input FITS file (usually with VIMTYPE='SCIENCE')
-    :param reference: reference FITS file (usually with VIMTYPE='DARK')
-    :return: makeflow entry (str)
-    """
-    otpt = input.replace('.fits', '_sub.fits')
-    line_1 = "%s: %s %s %s\n" % (otpt, program, input, reference)
-    line_2 = "\t%s -i %s -r %s -o %s\n\n" % (program, input, reference, otpt)
-    entry = line_1 + line_2
-    return entry
-
-
 def parse_img_csv(csv_file):
     """
     Parse FITS Header CSV
@@ -58,6 +40,24 @@ def parse_img_csv(csv_file):
     return required_tasks
 
 
+def spawn_makeflow_entry(program, inputf, reference):
+    """
+    Spawn Makeflow Entry.
+    From a program, input, and reference, generates a makeflow entry for that input.
+    Currently designed to work with 'fitssub' (LINK).
+
+    :param program: program that will be run (i.e. 'fitssub')
+    :param inputf: input FITS file (usually with VIMTYPE='SCIENCE')
+    :param reference: reference FITS file (usually with VIMTYPE='DARK')
+    :return: makeflow entry (str)
+    """
+    otpt = inputf.replace('.fits', '_sub.fits')
+    line_1 = "%s: %s %s %s\n" % (otpt, program, inputf, reference)
+    line_2 = "\t%s -i %s -r %s -o %s\n\n" % (program, inputf, reference, otpt)
+    entry = line_1 + line_2
+    return entry
+
+
 def write_makeflow(makeflow_task_list):
     """
     Write Makeflow
@@ -66,18 +66,23 @@ def write_makeflow(makeflow_task_list):
     :param makeflow_task_list: List of makeflow entries (from spawn_makeflow_entry)
     :return: None (writes to output file)
     """
+    mf_head = "FITSSUB=%s\n" % fitssub_loc
     with open(output_file, 'w') as makeflow:
+        makeflow.write(mf_head)
         for task in makeflow_task_list:
             makeflow.write(task)
 
 
 # # ----- Parse arguments. ----- # #
+# Setup parser.
 parser = argparse.ArgumentParser(description="FITS Image Processing Makeflow Generator",
                                  epilog="For more help, visit XXX")
+# Input CSV (-i)
 parser.add_argument('-i',
                     type=str,
                     default="output.csv",
                     help="input CSV (must be sorted)")
+# Output Makeflow file (-o)
 parser.add_argument('-o',
                     type=str,
                     default="makeflow.mf",
@@ -85,31 +90,39 @@ parser.add_argument('-o',
 # TODO: Add ability to specify a path for images.
 parser.add_argument('-p',
                     type=str,
-                    #default="./",
+                    # default="./",
                     help="path to images")
+# Use Program (-u)
+parser.add_argument('-u',
+                    type=str,
+                    default="./fitssub",
+                    help="use program (tip: use absolute path to program)")
+# Parallelize (-P)
 parser.add_argument("-P",
                     action="store_true",
                     help="use parallelized processing")
+# Parse Arguments
 args = parser.parse_args()
 
-# # ----- Assign input/output. ----- # #
+# # ----- Assign input/output/program location. ----- # #
 input_file = args.i
 output_file = args.o
+fitssub_loc = args.u
 
 # # ----- Parse input CSV into jobs list ----- # #
 jobs = parse_img_csv(input_file)
 
 # # ----- Create list of Makeflow Tasks ----- # #
 if args.P:
-    # Parallel Processing (currently slower @ 5 entries)
+    # Parallel Processing (slower with few entries)
     task_pool = mp.Pool()
     makeflow_tasks = [task_pool.apply(spawn_makeflow_entry,
-                                      args=("fitssub", job["input"], job["reference"],)) for job in jobs]
+                                      args=("$FITSSUB", job["input"], job["reference"],)) for job in jobs]
 else:
-    # Serial Processing (currently faster @ 5 entries)
+    # Serial Processing (faster with few entries)
     makeflow_tasks = []
     for job in jobs:
-        makeflow_tasks.append(spawn_makeflow_entry("fitssub", job["input"], job["reference"]))
+        makeflow_tasks.append(spawn_makeflow_entry("$FITSSUB", job["input"], job["reference"]))
 
 
 # # ----- Execute Main Script ----- # #
