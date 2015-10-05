@@ -66,7 +66,7 @@ def write_makeflow(makeflow_task_list):
     :param makeflow_task_list: List of makeflow entries (from spawn_makeflow_entry)
     :return: None (writes to output file)
     """
-    mf_head = "FITSSUB=%s\n" % fitssub_loc
+    mf_head = "FITSSUB=%s\n\n" % fitssub_loc
     with open(output_file, 'w') as makeflow:
         makeflow.write(mf_head)
         for task in makeflow_task_list:
