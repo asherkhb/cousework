@@ -69,7 +69,7 @@ else:
 
 # Assign input/output.
 img_directory = args.p
-output_file = args.o  # Will be from "-o"
+output_file = args.o
 
 # From path to image directory, find all *.fits files and save in file_queue, and save all other files in alt_files.
 file_queue = []
