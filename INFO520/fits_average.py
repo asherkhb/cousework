@@ -43,7 +43,7 @@ for group in composition:
     count = group["count"]
     content = group["contents"]
     f = content[0]
-    l = content[len(content)]
+    l = content[len(content)-1]
     if vimtype == 'DARK':
         avg_name = f + "-" + l
         log.append("%s: %d\n>DARK GROUP AVERAGED: %s\n" % (vimtype, count, avg_name))
