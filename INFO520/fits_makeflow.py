@@ -44,7 +44,7 @@ def spawn_makeflow_entry(program, inputf, reference):
     """
     Spawn Makeflow Entry.
     From a program, input, and reference, generates a makeflow entry for that input.
-    Currently designed to work with 'fitssub' (LINK).
+    Currently designed to work with 'fitssub' (https://bitbucket.org/jaredmales/fitssub).
 
     :param program: program that will be run (i.e. 'fitssub')
     :param inputf: input FITS file (usually with VIMTYPE='SCIENCE')
