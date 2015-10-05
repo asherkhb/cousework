@@ -39,29 +39,6 @@ def print_summary(img_total, science_count, dark_count, open_count, shut_count, 
       "> ERRORS: %d" % (img_total, science_count, dark_count, open_count, shut_count, error_count)
 
 
-def write_makeflow(makeflow_list):
-    """
-    makeflow_dict to be structured as [{"input": "<science_img>", "reference": "<dark_img"}, ...]
-    :param makeflow_dict: Dictionary of makeflow objects
-    :return:
-    """
-    program = "fitssub"
-    output_prefix = 'sub_'
-    with open("makeflow.mf", 'w') as makeflow:
-        for i, makeflow_object in enumerate(makeflow_list):
-            otpt = output_prefix + makeflow_object["input"]
-            entry1 = "%s: %s %s %s\n" % (otpt,
-                                         program,
-                                         makeflow_object["input"],
-                                         makeflow_object["reference"])
-            entry2 = "\t%s -i %s -r %s -o %s\n\n" % (program,
-                                                     makeflow_object["input"],
-                                                     makeflow_object["reference"],
-                                                     otpt)
-            entry = entry1 + entry2
-            makeflow.write(entry)
-
-
 # Future options:
 #    Inputs
 #      -u <url to images>
