@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Life Expectancy vs GNP, a Vega Demonstration</title>
+    <script src="http://vega.github.io/vega-editor/vendor/d3.min.js"></script>
+    <script src="http://vega.github.io/vega/vega.min.js"></script>
+    <style type="text/css">
+        #content {
+            display: inline;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>Life Expectancy by GDP</h1>
+        <div id="vis"></div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    function parse(spec) {
+        vg.parse.spec(spec, function(chart) { chart({el:"#vis"}).update(); })
+    }
+    parse("vegaspec.json");
+</script>
+
+</html>
