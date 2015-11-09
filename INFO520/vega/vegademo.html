@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A Vega Demonstration for ACIC 2015</title>
+    <script src="http://vega.github.io/vega-editor/vendor/d3.min.js"></script>
+    <script src="http://vega.github.io/vega/vega.min.js"></script>
+    <style type="text/css">
+        #content {
+            display: inline;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>Life Expectancy by GNP</h1>
+        <div id="lg"></div>
+        <h1>Population by GNP</h1>
+        <div id="pg"></div>
+        <h1>Population by Life Expectancy</h1>
+        <div id="pl"></div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    function parse(spec, elem) {
+        vg.parse.spec(spec, function(chart) { chart({el:elem}).update(); })
+    }
+    parse("life_gnp_spec.json", "#lg");
+    parse("pop_gnp_spec.json", "#pg");
+    parse("pop_life_spec.json", "#pl");
+</script>
+
+</html>

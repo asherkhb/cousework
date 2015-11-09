@@ -4,8 +4,8 @@
 
   "data": [
     {
-      "name": "life",
-      "url": "life_gnp.json"
+      "name": "d",
+      "url": "pop_gnp.json"
     }
   ],
 
@@ -13,7 +13,7 @@
     {
       "name": "xscale",
       "type": "linear",
-      "domain": {"data": "life", "field": "LifeExpectancy"},
+      "domain": {"data": "d", "field": "Population"},
       "range": "width",
       "nice": true,
       "zero": false,
@@ -22,7 +22,7 @@
     {
       "name": "yscale",
       "type": "linear",
-      "domain": {"data": "life", "field": "GNP"},
+      "domain": {"data": "d", "field": "GNP"},
       "range": "height",
       "nice": true,
       "zero": false,
@@ -33,12 +33,12 @@
   "axes": [
     {
       "type": "x",
-      "title": "Life Expectancy",
+      "title": "Population",
       "scale": "xscale"
     },
     {
       "type": "y",
-      "title": "GDP",
+      "title": "GNP",
       "titleOffset": 70,
       "scale": "yscale"
     }
@@ -47,11 +47,11 @@
   "marks": [
     {
       "type": "line",
-      "from": { "data": "life" },
+      "from": { "data": "d" },
       "properties": {
         "enter": {
           "interpolate": { "value": "linear" },
-          "x": { "scale": "xscale", "field": "LifeExpectancy"},
+          "x": { "scale": "xscale", "field": "Population"},
           "y": { "scale": "yscale", "field": "GNP"},
           "stroke": {"value": "#000"},
           "strokeWidth": {"value": 1}
@@ -60,10 +60,10 @@
     },
     {
       "type": "symbol",
-      "from": { "data": "life" },
+      "from": { "data": "d" },
       "properties": {
         "enter": {
-          "x": { "scale": "xscale", "field": "LifeExpectancy"},
+          "x": { "scale": "xscale", "field": "Population"},
           "y": { "scale": "yscale", "field": "GNP"},
           "fill": {"value": "#fff"},
           "stroke": {"value": "#000"},
